@@ -1,6 +1,21 @@
 # Python Expansion Course
 
 ## 1. 環境構築
+### pyenvのインストール
+brewを使ってpyenvをインストール
+```zsh
+$ brew install pyenv
+```
+
+PATHを通す
+```zsh
+$ echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+$ echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+$ echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+```
+
+Ref. https://www.karakaram.com/mac-pyenv-install/#install-pyenv
+
 ### Jupyter notebookの使い方
 - pyenvをインストール
 - pyenvを使ってanacondaを起動
@@ -137,6 +152,15 @@ with open("my.txt", "r") as f:
 - バイナリデータの読み書きは画像データの読み込などで用いる事が多い
 - `with`句を使う事でファイルのstreamを取得する事が出来る
 - その為、`with`句を出ると`close()`を明示しなくてもファイルが自動的に閉じる
+
+### Case1. サイト内の画像をスクレイピングする
+ステップ
+1. HTMLを入手する
+2. imgのDOMアクセス方法を確認する
+3. imgタグから画像のURLを取得する
+4. (画像のURLをDL可能な形式に変換する)
+5. 1件ずつダウンロードする
+6. ファイルに保存する
 
 ### Javascriptを使ってレンダリングしているサイトのスクレイピング
 
