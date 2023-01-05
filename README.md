@@ -162,9 +162,58 @@ with open("my.txt", "r") as f:
 5. 1件ずつダウンロードする
 6. ファイルに保存する
 
-### Javascriptを使ってレンダリングしているサイトのスクレイピング
+### Case2. httpリクエストに応じて返すhtmlが異なるサイトをスクレイピングする
+Webサイトによってはhttpリクエストのheaderやcookie、User-agentなどパラメータ情報に応じて異なるhtmlを返すサイトが存在する
+
+そのようなサイトをスクレイピングする際は`Charles`というツールを使って、httpリクエストのパラメータを検証し、スクレイピングの際のhttpリクエストを編集する
+
+またpythonからのhttpリクエストのパラメータを簡単に追加する事が出来る`requests`というモジュールを使う
+
+```zsh
+$ pip3 install --upgrade requests
+```
+
+requestsの使い方
+
+```python
+import requests
+
+# URLにGETリクエスト
+r = requests.get(<URL>)
+
+# HTMLの読み込み
+html = r.text 
+
+# カスタムheaderの設定
+url = "https://www.someurl.com"
+headers = {"user-agent": "Mozilla/5.0 (Machintosh..."}
+r = requests.get(url,headers=headers)
+html = r.text
+```
 
 
+### Case3. Javascriptを使ってレンダリングしているサイトのスクレイピング
+ReactやVueなどのフレームワークではjavascriptを使ってDOMを生成している為、javascript実行前のhtmlが空になっている。その様なサイトをスクレイピングする場合はjsでレンダリングされた後のサイトをスクレイピングする必要がある。
+
+その為に以下の３つを使う
+- `BeautifulSoup`：スクレイピング用のモジュール。静的なhtmlからデータを取得する。
+- `Selenium`：ブラウザを自動的に操作する為のツール。リンクのクリックやユーザー操作を擬似的に再現してくれる。
+- `PhantomJS`：ヘッドレスブラウザの一種。レンダリング機能を持たない代わりにDOMの構成やjsの実行結果をDOMに反映させるなどの機能を持つ。(現在は開発が中断している為、chorme-driverというツールを使うのが主流？ [参考](https://qiita.com/memakura/items/20a02161fa7e18d8a693))
+
+
+`Selenium`のインストール
+```bash
+$ pip3 install --upgrade selenium
+```
+
+ヘッドレスブラウザのインストール
+```bash
+# PhantomJS(deprecated)
+$ npm install -g phantomjs
+
+# Chrome driver
+$ pip3 install chromedriver-binary
+```
 
 ## 5. Webサーバー
 ### Flask
@@ -226,6 +275,27 @@ def api_users_update(user_id):
 - GET通信の場合は`request.args.get`でGETパラメータを展開する事が出来る
 - POST通信のPOSTパラメータは`request.form.get`で展開する事が出来る
 
+templateやassetの配信
+- .htmlファイルを配信する機能として`template`機能というのが備わっている
+- ルートディレクトリに`templates`フォルダを作成し、配信しておきたいhtmlファイルを置いておくとアクセス可能になる
+- 配信するhtmlファイルの動的な値を引数で渡して記述した上で配信する事もできる
+
+```python
+from flask import Flask, render_template
+
+@app.route("/mypage")
+def myPage():
+    title = "Hello, World!!!"
+    return render_template("index.html", title=title)
+```
+
+```html
+<html>
+    <body>
+        <h1>{{ title }}</h1>
+    </body>
+</html>
+```
 ### Case1: Cookieを扱うrequest、response
 #### Cookieの生成
 ```python
@@ -284,5 +354,11 @@ def session_sample():
 ### Case4: Logging
 
 アプリケーションの定義
+
+## Flaskアプリのデプロイ
+
+### 参考
+- https://speakerdeck.com/shinyorke/flask-plus-app-engine-plus-github-actions
+- https://cloud-ace.jp/column/detail250/#:~:text=Cloud%20Run%20%E3%81%A8%E3%81%AE%E9%81%95%E3%81%84,%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0%E3%81%A7%E3%81%82%E3%82%8B%E3%81%93%E3%81%A8%E3%81%A7%E3%81%99%E3%80%82
 
 
