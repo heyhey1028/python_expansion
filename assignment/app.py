@@ -1,8 +1,10 @@
 import json
 from urllib.request import urlopen
-from random import shuffle
+import random
 from flask import Flask, render_template
 from bs4 import BeautifulSoup
+from pprint import pprint
+
 
 app = Flask(__name__)
 
@@ -13,26 +15,24 @@ def index():
 
 @app.route("/api/recommend_article")
 def api_recommend_article():
-    """はてブのホットエントリーから記事を入手して、ランダムに1件返却します."""
+    # 1. はてブのホットエントリーページのHTMLを取得する
+    url = "https://b.hatena.ne.jp/hotentry/all"
+    with urlopen(url) as res:
+        html = res.read()
+        
+    # 2. BeautifulSoupでHTMLを読み込む
+    soup = BeautifulSoup(html, "html.parser")
 
-    """
-        **** ここを実装します（基礎課題） ****
+    # 3. 記事一覧を取得する
+    articles = soup.select(".entrylist-contents-title a")
+    
+    # 4. ランダムに1件取得する
+    article = random.choice(articles)
 
-        1. はてブのホットエントリーページのHTMLを取得する
-        2. BeautifulSoupでHTMLを読み込む
-        3. 記事一覧を取得する
-        4. ランダムに1件取得する
-        5. 以下の形式で返却する.
-            {
-                "content" : "記事のタイトル",
-                "link" : "記事のURL"
-            }
-    """
-
-    # ダミー
+    # 5. json形式で返却する
     return json.dumps({
-        "content" : "記事のタイトルだよー",
-        "link" : "記事のURLだよー"
+        "content" : article["title"],
+        "link" : article["href"]
     })
 
 @app.route("/api/xxxx")
