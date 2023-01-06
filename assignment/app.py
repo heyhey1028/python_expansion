@@ -35,15 +35,18 @@ def api_recommend_article():
         "link" : article["href"]
     })
 
-@app.route("/api/xxxx")
-def api_xxxx():
-    """
-        **** ここを実装します（発展課題） ****
-        ・自分の好きなサイトをWebスクレイピングして情報をフロントに返却します
-        ・お天気APIなども良いかも
-        ・関数名は適宜変更してください
-    """
-    pass
+@app.route("/api/tokyo_weather")
+def api_tokyo_weather():
+    url = "https://weather.yahoo.co.jp/weather/jp/13/4410.html"
+    with urlopen(url) as res:
+        html = res.read()
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    rs = soup.find(class_='forecastCity')
+    rs = [i.strip() for i in rs.text.splitlines()]
+    rs = [i for i in rs if i != ""]
+    return rs[0] + "の東京の天気は" + rs[1] + "、明日は" + rs[19] + "です。"
 
 if __name__ == "__main__":
     app.run(debug=True, port=5004)

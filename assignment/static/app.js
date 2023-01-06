@@ -60,6 +60,8 @@ function handleStartButtonClick() {
     if (text.indexOf("ニュース") !== -1) {
       // ニュースだったら、API経由でおすすめ記事を取得する.
       showRecommendArticle();
+    } else if (text.indexOf("天気") !== -1) {
+      showTokyoWeather();
     } else {
       // ニュース以外はわからないよ〜.
       let synthes = new SpeechSynthesisUtterance(
@@ -106,6 +108,21 @@ function showRecommendArticle() {
 }
 
 /**
+ * API経由で東京の天気を取得して、音声で発します.
+ */
+function showTokyoWeather() {
+  api("/api/tokyo_weather").then((response) => {
+    console.log(response);
+
+    let synthes = new SpeechSynthesisUtterance(response);
+    synthes.lang = "ja-JP";
+    speechSynthesis.speak(synthes);
+
+    document.getElementById("text").innerHTML = `<a>${response}</a>`;
+  });
+}
+
+/**
  * アプリ起動時に、説明を表示します.
  */
 function startIntro() {
@@ -113,7 +130,10 @@ function startIntro() {
 
   return new Promise((resolve, reject) => {
     // let texts = "「おすすめニュースを教えて」と聞いてみてください。".split('');
-    let texts = "「おすすめニュースを教えて」と聞いてみてください。".split("");
+    let texts =
+      "「おすすめニュースを教えて」と聞いてみてください。「天気を教えて」と聞くと東京の天気も教えてくれます。".split(
+        ""
+      );
 
     function showMessage(texts, cb) {
       if (texts.length === 0) {
